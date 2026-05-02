@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Resume Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="left">
+            <h1>Improve your resume with AI</h1>
+            <p>Upload your resume and get instant feedback, score, and suggestions to stand out.</p>
+        </div>
+
+        <div class="card">
+            <h2>Your resume deserves to</h2>
+            <h1 class="highlight">Stand out!</h1>
+
+            <p class="upload-text" style="margin-bottom: 5px;">Upload Resume</p>
+            <p id="selected-file-name"
+                style="color: #4ecdc4; font-weight: bold; margin-top: 0; margin-bottom: 15px; display: none;"></p>
+
+            <form action="/upload" method="post" enctype="multipart/form-data">
+
+                <label class="upload-btn">
+                    📄 Choose Resume
+                    <input type="file" name="resume" hidden required>
+                </label>
+
+                <button type="submit" class="analyze-btn">
+                    Analyze Resume
+                </button>
+
+            </form>
+
+
+        </div>
+
+        <!-- SCROLL DOWN ARROW -->
+        <a href="#why-section" class="scroll-arrow">
+            <span style="margin-right: 8px; font-size: 14px;">Scroll down</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+        </a>
+
+    </section>
+
+
+    <!-- WHY -->
+    <section id="why-section" class="why">
+
+        {% if score %}
+        <div class="result-container"
+            style="margin-bottom: 60px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h2 style="margin-bottom: 30px;">Your Resume Score</h2>
+
+            <div style="display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap;">
+
+                <!-- Small Detailed Circular Score -->
+                <div id="score-circle" class="circular-progress">
+                    <div class="inner-circle">
+                        <span class="progress-value">{{ score }}%</span>
+                    </div>
+                </div>
+                <script>
+                    document.getElementById('score-circle').style.background = "conic-gradient(#4ecdc4 {{ score * 3.6 }}deg, #e2e8f0 0deg)";
+                </script>
+
+                <!-- Feedback List -->
+                <div class="analysis-box"
+                    style="text-align: left; background: #f8fafc; padding: 20px 30px; border-radius: 15px; border-left: 5px solid #4ecdc4; box-shadow: 0 4px 15px rgba(0,0,0,0.03); max-width: 450px;">
+
+                    <!-- Temporary Debug -->
+                    <div style="display:none;">{{ missing }}</div>
+
+                    {% if missing and missing[0] != "No major sections missing (Good job!)" %}
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #ef4444; font-size: 18px;">⚠️ What your resume is lacking:</h3>
+                        
+                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                            {% for item in missing %}
+                            <li style="margin-bottom: 12px; font-size: 16px; color: #1e293b;">❌ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <p style="margin-top: 15px; font-size: 14px; color: #334155; font-weight: bold; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                            💡 Want to improve? Check out our <a href="#samples" style="color: #4ecdc4; text-decoration: underline;">Sample Resumes</a> below!
+                        </p>
+
+                    {% else %}
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #4ecdc4; font-size: 18px;">✅ Your resume looks complete!</h3>
+                        
+                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                            {% for item in missing %}
+                            <li style="margin-bottom: 12px; font-size: 16px; color: #1e293b;">⭐ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                </div>
+            </div>
+            <script>
+                // Auto-scroll to results when loaded
+                window.location.hash = "#why-section";
+            </script>
+        </div>
+        {% endif %}
+
+        <h2>Why Resume is Important?</h2>
+
+        <div class="why-boxes">
+
+            <div class="box">
+                <h3>🎯 Get Noticed</h3>
+                <p>Recruiters spend only 6–8 seconds on a resume.</p>
+            </div>
+
+            <div class="box">
+                <h3>🧠 Show Skills</h3>
+                <p>Highlight your projects and skills clearly.</p>
+            </div>
+
+            <div class="box">
+                <h3>🚀 Land Jobs</h3>
+                <p>A strong resume increases interview chances.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SAMPLE -->
+    <section id="samples" class="samples">
+
+        <h2>Sample Resumes</h2>
+        <p>Check examples to understand structure and formatting.</p>
+
+        <div class="sample-container">
+
+            <div class="sample-card">
+                <h3>Fresher Resume</h3>
+                <a href="{{ url_for('static', filename='fresher_resume.pdf') }}" target="_blank">
+                    View PDF
+                </a>
+            </div>
+
+            <div class="sample-card">
+                <h3>Developer Resume</h3>
+                <a href="{{ url_for('static', filename='developer_resume.pdf') }}" target="_blank">
+                    View PDF
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- CUSTOM UPLOAD POPUP -->
+    <div id="upload-popup"
+        style="position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 15px 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; align-items: center; gap: 10px; font-weight: bold;">
+        <span style="font-size: 24px;">🚀</span>
+        <span id="popup-text">Resume selected!</span>
+    </div>
+
+    <script>
+        const fileInput = document.querySelector('input[type="file"]');
+        const popup = document.getElementById('upload-popup');
+        const popupText = document.getElementById('popup-text');
+        const form = document.querySelector('form');
+        const uploadLabel = document.querySelector('.upload-btn');
+
+        // Show popup when file is selected
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                const fileName = this.files[0].name;
+
+                // Update popup text and animate it in
+                popupText.innerText = fileName + " is ready for analysis!";
+                popup.style.bottom = '40px';
+
+                // Hide popup after 3.5 seconds
+                setTimeout(() => {
+                    popup.style.bottom = '-100px';
+                }, 3500);
+
+                // Show text above the button
+                const selectedFileText = document.getElementById('selected-file-name');
+                if (selectedFileText) {
+                    selectedFileText.innerText = "📁 Selected: " + fileName;
+                    selectedFileText.style.display = 'block';
+                }
+
+                // Update the text in the label safely
+                Array.from(uploadLabel.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().includes('Choose Resume')) {
+                        node.textContent = " ✅ Change Resume ";
+                    }
+                });
+            }
+        });
+
+        // Show loading state when form submits
+        form.addEventListener('submit', function () {
+            const btn = document.querySelector('.analyze-btn');
+            btn.innerText = "Analyzing...";
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none";
+        });
+    </script>
+
+</body>
+
+</html>
